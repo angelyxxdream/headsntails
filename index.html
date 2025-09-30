@@ -1,88 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sixtyfour+Convergence&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
-    <title>Heads or Tails?</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sixtyfour+Convergence&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+  <title>Heads or Tails?</title>
 </head>
-    <body>
-        <div class="game-container">
+<body>
+  <div class="game-container">
+    <h1>Heads or Tails?</h1>
 
-            <h1>Heads or Tails?</h1>
-            <img id="headsImg" src="images/heads.png" alt="Heads" width="100">
-            <img id="tailsImg" src="images/tails.png" alt="Tails" width="100">
-            <h2 id="result">Result:</h2>
-            <h3 id="score">Score: </h3>
-            <button id="resetBtn">Reset Score</button>
+    <img class="js-heads" id="headsImg" src="images/heads.png" alt="Heads" width="100">
+    <img class="js-tails" id="tailsImg" src="images/tails.png" alt="Tails" width="100">
 
-        </div>
-        
+    <p class="js-choice">Your choice</p>
+    <h2 id="result">Result:</h2>
+    <h3 id="score">Score:</h3>
+    <button id="resetBtn">Reset Score</button>
+  </div>
 
+  <script>
+    let score = JSON.parse(localStorage.getItem('score')) || {
+      humanScore: 0,
+      computerScore: 0,
+      lastResult: ''
+    };
 
+    const headsImg = document.getElementById('headsImg');
+    const tailsImg = document.getElementById('tailsImg');
+    const resetButton = document.getElementById('resetBtn');
+    const choiceParagraph = document.querySelector('.js-choice');
 
-        <script>
-            let score = JSON.parse(localStorage.getItem('score')) || {
+    headsImg.addEventListener('click', () => flipCoin('heads'));
+    tailsImg.addEventListener('click', () => flipCoin('tails'));
+    resetButton.addEventListener('click', resetScores);
 
-                humanScore: 0,
-                computerScore: 0,
-                lastResult: ''
-            };
+    function updateDisplay() {
+      document.getElementById('result').innerText = score.lastResult
+        ? `The result is: ${score.lastResult}`
+        : 'Result:';
+      document.getElementById('score').innerText =
+        `Human: ${score.humanScore} vs Computer: ${score.computerScore}`;
+    }
 
-            const headsImg = document.getElementById('headsImg');
-            const tailsImg = document.getElementById('tailsImg');
-            const resetButton = document.getElementById('resetBtn');
+    function yourchoice(humanMove) {
+      choiceParagraph.innerText = `You chose: ${humanMove}`;
+    }
 
-            headsImg.addEventListener('click', () => flipCoin('heads'));
-            tailsImg.addEventListener('click', () => flipCoin('tails'));
-            resetButton.addEventListener('click', resetScores);
-            
-            function updateDisplay(){
-                document.getElementById('result').innerText = score.lastResult ? `The result is: ${score.lastResult}`
-                :'Result:';
-                document.getElementById('score').innerText = `Human: ${score.humanScore} vs Computer: ${score.computerScore}`
-            };
-          
-            
+    function flipCoin(humanMove) {
+      // show player's choice
+      yourchoice(humanMove);
 
+      let result = Math.random() <= 0.5 ? 'heads' : 'tails';
 
-            function flipCoin(humanMove) {
+      if (humanMove === result) {
+        score.humanScore++;
+      } else {
+        score.computerScore++;
+      }
 
-                let result = Math.random() <= 0.5 ? 'heads' : 'tails';
+      score.lastResult = result;
+      localStorage.setItem('score', JSON.stringify(score));
 
-                if (humanMove === result) {
+      document.getElementById('result').innerText = `The result is: ${result}`;
+      document.getElementById('score').innerText =
+        `Human: ${score.humanScore} vs Computer: ${score.computerScore}`;
+    }
 
-                    score.humanScore++;
+    function resetScores() {
+      score.humanScore = 0;
+      score.computerScore = 0;
+      score.lastResult = '';
+      document.getElementById('result').innerText = 'Result:';
+      document.getElementById('score').innerText = 'Human: 0 vs Computer: 0';
+      choiceParagraph.innerText = 'Your choice';
+      localStorage.removeItem('score');
+    }
 
-                } else {
-
-                    score.computerScore++;
-               }
-
-               localStorage.setItem('score', JSON.stringify(score));
-
-               document.getElementById('result').innerText = `The result is: ${result}`;
-
-               document.getElementById('score').innerText = `Human: ${score.humanScore} vs Computer: ${score.computerScore}`;
-            };
-
-            function resetScores() {
-            
-                score.humanScore = 0;
-                score.computerScore = 0;
-                document.getElementById('result').innerText = 'Result:';
-                document.getElementById('score').innerText = 'Human: 0 vs Computer: 0';
-                localStorage.removeItem('score');
-            };
-            
-            updateDisplay();
-            
-        </script>
-    </body>
-    </html>
+    updateDisplay();
+  </script>
+</body>
+</html>
